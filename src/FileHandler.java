@@ -1,4 +1,6 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 /**
@@ -32,6 +34,13 @@ public class FileHandler {
             System.out.println("FILE READING ERROR: " + e);
         }
         return null;
+    }
+
+    public void write(){
+        /*TODO:
+           1. VERIFICAR COMO SERÁ TRATADO A SAIDA
+           2. ACREDITO QUE CRIAR OBJETOS PARA CADA TIPO DE SAIDA SEJA MAIS INTERESSANTE (como: Evento local, Envio de mensagem, Recebimento de mensagem)
+        * */
     }
 
 }
