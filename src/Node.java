@@ -1,7 +1,3 @@
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 /**
  * Node object
  */
@@ -10,7 +6,7 @@ public class Node {
     private Configuration config;
     private LamportClock clock;
 
-    public static void main(String[]args) {
+    public static void main(String[] args) {
         /*
         1. Logic for JGroups (MulticastSocket)
         2. While not reached 100 events
