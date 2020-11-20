@@ -1,3 +1,5 @@
+package main;
+
 /**
  * Lamport's clock object
  */
