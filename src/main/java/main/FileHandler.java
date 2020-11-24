@@ -1,8 +1,11 @@
 package main;
 
+import org.jgroups.util.Tuple;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,29 +13,40 @@ import java.util.List;
  */
 public class FileHandler {
 
-    private final File arq;
+    private final File file;
 
-    public FileHandler(File arq) {
-        this.arq = arq;
+    public FileHandler(String file) {
+        this.file = new File(file);
     }
 
-    public List<Configuration> read(){
+    public Tuple<Configuration, List<String>> read(int myId){
         try {
-            //String que irá receber cada linha do arquivo
-            String line = "";
-            int lineCounter = 0;
+            Configuration myConfig = null;
+            ArrayList<String> availableHosts = new ArrayList<>();
+            String line;
 
-            //Indicamos o arquivo que será lido
-            BufferedReader br = new BufferedReader(new FileReader(arq));
+            BufferedReader br = new BufferedReader(new FileReader(this.file));
 
             while ((line = br.readLine()) != null) {
-                lineCounter++;
-                System.out.println(lineCounter + " Linha: " + line);
-                // pegar os line.subString
-                // new Configuration()
+                String[] rawConfig  = line.split(" ");
+
+                int id = Integer.parseInt(rawConfig[0]);
+                String host = rawConfig[1];
+                int port = Integer.parseInt(rawConfig[2]);
+                double chance = Double.parseDouble(rawConfig[3]);
+
+                if (myId == id) {
+                    myConfig = new Configuration(id, host, port, chance);
+                }
+                else {
+                    availableHosts.add(host);
+                }
             }
             br.close();
-        } catch (java.io.IOException e) {
+
+            return new Tuple<>(myConfig, availableHosts);
+        }
+        catch (java.io.IOException e) {
             System.out.println("FILE READING ERROR: " + e);
         }
         return null;

@@ -19,10 +19,15 @@ public class LamportClock {
         return counter;
     }
 
-    public void increaseCounter(int counter) {
+    public void increaseCounter(int increment, boolean distributed) {
         try {
             lock.acquire();
-            this.counter += counter;
+            if (distributed) {
+                this.counter = Math.max(this.counter, increment)+1;
+            }
+            else {
+                this.counter += increment;
+            }
             lock.release();
         } catch (InterruptedException e) {
             System.out.println("Error while increasing clock: " + e);

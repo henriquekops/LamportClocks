@@ -1,5 +1,6 @@
 package main;
 
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import org.jgroups.JChannel;
@@ -21,18 +22,16 @@ public class Node {
     private volatile boolean start;
     private volatile boolean stopListen;
 
-    private final int threshold;
-
-    public Node(boolean isMaster, int threshold) {
+    public Node(boolean isMaster, Configuration config) {
         // TODO: use config when file handler is complete
         this.isMaster = isMaster;
         this.start = isMaster;
         this.stopListen = false;
-        this.threshold = threshold;
+        this.config = config;
         this.clock = new LamportClock();
     }
 
-    public void run() {
+    public void run(List<String> availableHosts) {
         /*
         1. Logic for JGroups
         2. While not reached 100 events
@@ -66,22 +65,26 @@ public class Node {
                 // TODO: move receiver to here (?)
                 // TODO: i think that there is a problem synchronizing clocks
 
-                int eventTypeSelector = rand.nextInt(99)+1;
+                double eventTypeSelector = Math.round(rand.nextFloat()*10)/10.0;
 
-                if (eventTypeSelector <= this.threshold) {
-                    System.out.println("event=" + eventCounter + " type=distributed");
+                if (eventTypeSelector <= this.config.getChance()) {
+                    this.clock.increaseCounter(1, false);
                     Message msg = new Message(null, this.clock.getCounter());
                     this.channel.send(msg);
-                } else {
-                    System.out.println("event=" + eventCounter + " type=local");
-                    this.clock.increaseCounter(1);
+
+                    System.out.println("event=" + eventCounter + " type=distributed");
+                }
+
+                else {
+                    this.clock.increaseCounter(1, false);
+
+                    System.out.println("event=" + eventCounter + " type=local " + "clock=" + this.clock.getCounter());
                 }
             }
         } catch (Exception e) {
             System.out.println("Exception occurred: " + e);
             System.exit(-1);
         } finally {
-            System.out.println("main thread: stop!");
             stopListen = true;
             channel.disconnect();
             channel.close();
@@ -98,7 +101,7 @@ public class Node {
                             start = true;
                         } else {
                             System.out.println("Received: clock=" + msg.getObject());
-                            clock.increaseCounter(msg.getObject());
+                            clock.increaseCounter(msg.getObject(), true);
                         }
                     }
                 });
