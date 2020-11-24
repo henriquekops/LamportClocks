@@ -1,11 +1,9 @@
-package main;
-
-import org.jgroups.util.Tuple;
+package main.objects;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,12 +17,10 @@ public class FileHandler {
         this.file = new File(file);
     }
 
-    public Tuple<Configuration, List<String>> read(int myId){
+    public List<Node> read(int myId){
         try {
-            Configuration myConfig = null;
-            ArrayList<String> availableHosts = new ArrayList<>();
             String line;
-
+            LinkedList<Node> nodes = new LinkedList<>();
             BufferedReader br = new BufferedReader(new FileReader(this.file));
 
             while ((line = br.readLine()) != null) {
@@ -34,17 +30,19 @@ public class FileHandler {
                 String host = rawConfig[1];
                 int port = Integer.parseInt(rawConfig[2]);
                 double chance = Double.parseDouble(rawConfig[3]);
+                boolean isMaster = Boolean.parseBoolean(rawConfig[4]);
+
+                Node n = new Node(id, host, port, chance, isMaster);
 
                 if (myId == id) {
-                    myConfig = new Configuration(id, host, port, chance);
+                    nodes.add(0, n);
                 }
                 else {
-                    availableHosts.add(host);
+                    nodes.add(n);
                 }
             }
             br.close();
-
-            return new Tuple<>(myConfig, availableHosts);
+            return nodes;
         }
         catch (java.io.IOException e) {
             System.out.println("FILE READING ERROR: " + e);

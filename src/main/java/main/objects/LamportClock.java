@@ -1,4 +1,4 @@
-package main;
+package main.objects;
 
 import java.util.concurrent.Semaphore;
 
@@ -16,19 +16,21 @@ public class LamportClock {
     }
 
     public int getCounter() {
-        return counter;
+        return this.counter;
     }
 
     public void increaseCounter(int increment, boolean distributed) {
         try {
-            lock.acquire();
             if (distributed) {
+                this.lock.acquire();
                 this.counter = Math.max(this.counter, increment)+1;
+                this.lock.release();
             }
             else {
+                this.lock.acquire();
                 this.counter += increment;
+                this.lock.release();
             }
-            lock.release();
         } catch (InterruptedException e) {
             System.out.println("Error while increasing clock: " + e);
         }
