@@ -40,6 +40,8 @@ public class App {
             channel = new JChannel();
             channel.connect(CLUSTER);
 
+            listen();
+
             if (currentNode.isMaster()) {
                 Scanner input = new Scanner(System.in);
                 System.out.println("[MASTER] Press any key to start");
@@ -47,6 +49,7 @@ public class App {
 
                 System.out.println("[MASTER]: Starting all nodes ...");
                 Message msg = new Message(null, 1);
+
                 channel.send(msg);
                 channel.disconnect();
                 channel.close();
@@ -56,14 +59,16 @@ public class App {
                     public void receive(Message msg) {
                         while (!start) {
                             if (msg.getObject().equals(1)) {
+                                System.out.println("STARTING!");
                                 start = true;
                             }
                         }
+                        channel.disconnect();
+                        channel.close();
                     }
                 });
             }
 
-            listen();
             while (!start) { }
 
             Random rand = new Random();
@@ -78,15 +83,16 @@ public class App {
 
                     byte[] msg = ByteBuffer.allocate(4).putInt(currentNode.getClock().getCounter()).array();
                     socket.send(new DatagramPacket(msg, msg.length, targetNode.getHost(), targetNode.getPort()));
+                    System.out.println("generate distributed event | clock = " + currentNode.getClock().getCounter());
                 }
                 else {
                     currentNode.getClock().increaseCounter(1, false);
+                    System.out.println("generate local event | clock = " + currentNode.getClock().getCounter());
                 }
             }
         } catch (Exception e) {
             System.out.println("Exception occurred: " + e);
             System.exit(-1);
-
         }
         finally {
             stopListen = true;
@@ -106,6 +112,7 @@ public class App {
                         socket.receive(packet);
                         increase = ByteBuffer.wrap(packet.getData()).getShort();
                         currentNode.getClock().increaseCounter(increase, true);
+                        System.out.println("received event = " + increase + " | clock = " + currentNode.getClock().getCounter());
                     } catch (SocketTimeoutException e) {/* ignore*/}
                 }
             }

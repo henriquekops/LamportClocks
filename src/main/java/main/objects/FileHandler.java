@@ -18,36 +18,40 @@ public class FileHandler {
     }
 
     public List<Node> read(int myId){
+        LinkedList<Node> nodes = new LinkedList<>();
+
         try {
             String line;
-            LinkedList<Node> nodes = new LinkedList<>();
             BufferedReader br = new BufferedReader(new FileReader(this.file));
 
             while ((line = br.readLine()) != null) {
-                String[] rawConfig  = line.split(" ");
 
-                int id = Integer.parseInt(rawConfig[0]);
-                String host = rawConfig[1];
-                int port = Integer.parseInt(rawConfig[2]);
-                double chance = Double.parseDouble(rawConfig[3]);
-                boolean isMaster = Boolean.parseBoolean(rawConfig[4]);
+                if (!line.equals("")) {
+                    String[] rawConfig = line.split(" ");
 
-                Node n = new Node(id, host, port, chance, isMaster);
+                    int id = Integer.parseInt(rawConfig[0]);
+                    String host = rawConfig[1];
+                    int port = Integer.parseInt(rawConfig[2]);
+                    double chance = Double.parseDouble(rawConfig[3]);
+                    boolean isMaster = Boolean.parseBoolean(rawConfig[4]);
 
-                if (myId == id) {
-                    nodes.add(0, n);
-                }
-                else {
-                    nodes.add(n);
+                    Node n = new Node(id, host, port, chance, isMaster);
+
+                    if (myId == id) {
+                        nodes.add(0, n);
+                    } else {
+                        nodes.add(n);
+                    }
                 }
             }
             br.close();
-            return nodes;
         }
-        catch (java.io.IOException e) {
-            System.out.println("FILE READING ERROR: " + e);
+        catch (Exception e) {
+            System.out.println("Input file's format is wrong! Check out docs for help ...");
+            e.printStackTrace();
+            System.exit(-1);
         }
-        return null;
+        return nodes;
     }
 
     public void write(){

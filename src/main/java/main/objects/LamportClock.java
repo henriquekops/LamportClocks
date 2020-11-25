@@ -8,7 +8,7 @@ import java.util.concurrent.Semaphore;
 public class LamportClock {
 
     private int counter;
-    private Semaphore lock;
+    private final Semaphore lock;
 
     public LamportClock() {
         this.lock = new Semaphore(1);
