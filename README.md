@@ -40,7 +40,10 @@ below:
 
 ### Code Observations
 
+1. The first node at configuration file will always be master, and needs to run 
+first.
+
 1. All nodes will connect initially to a multicast group at **224.0.0.1:5000**,
-and all will wait until an elected master node enable all communications.
+and all will wait until master node enable all communications.
 
 1. All communication buffers will be set with a space of 1024 bytes.

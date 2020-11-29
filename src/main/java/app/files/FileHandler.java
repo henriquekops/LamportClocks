@@ -38,14 +38,16 @@ public class FileHandler {
             File configFile = new File(configFilePath);
             BufferedReader br = new BufferedReader(new FileReader(configFile));
             String line;
+            int lineCounter = 0;
 
             while ((line = br.readLine()) != null) {
-                Node n = createNodeByConfig(line);
+                Node n = createNodeByConfig(line, lineCounter==0);
                 if (currentId == n.getId()) {
                     nodes.add(0, n);
                 } else {
                     nodes.add(n);
                 }
+                lineCounter++;
             }
             br.close();
             return nodes;
@@ -83,14 +85,14 @@ public class FileHandler {
      * @param configString String formatted as expected node configuration
      * @return New Node object
      */
-    private Node createNodeByConfig(String configString) {
+    private Node createNodeByConfig(String configString, boolean isFirst) {
         try {
             String[] rawConfig = configString.split(" ");
             int id = Integer.parseInt(rawConfig[0]);
             String host = rawConfig[1];
             int port = Integer.parseInt(rawConfig[2]);
             double chance = Double.parseDouble(rawConfig[3]);
-            return new Node(id, host, port, chance);
+            return new Node(id, host, port, chance, isFirst);
         } catch (UnknownHostException e) {
             System.out.println("ERROR while creating nodes: " + e);
             System.exit(-1);

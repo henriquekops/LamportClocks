@@ -5,17 +5,20 @@ import app.nodes.Node;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 
 /**
  * Custom UDP socket representation
  */
 public class CustomSocket {
 
+    private final int SOCKET_TIMEOUT;
     private final byte[] buffer;
     private final DatagramSocket socket;
 
     public CustomSocket(int port) throws IOException {
         int BUFFER_SIZE = 1024;
+        this.SOCKET_TIMEOUT = 5000;
         this.buffer = new byte[BUFFER_SIZE];
         this.socket = new DatagramSocket(port);
     }
@@ -40,8 +43,13 @@ public class CustomSocket {
      * @throws IOException In case if an error occurs when receiving message
      */
     public String receive() throws IOException {
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        socket.receive(packet);
-        return new String(packet.getData());
+        try {
+            socket.setSoTimeout(SOCKET_TIMEOUT);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
+            return new String(packet.getData());
+        } catch (SocketTimeoutException e) {
+            return null;
+        }
     }
 }

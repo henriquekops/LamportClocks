@@ -41,6 +41,10 @@ public class ListenThread extends Thread {
             while (running.get()) {
                 String convertedMsg = socket.receive();
 
+                if (convertedMsg == null) {
+                    continue;
+                }
+
                 String[] splitMsg = convertedMsg.split(" ");
 
                 int senderCLock = Integer.parseInt(splitMsg[0].trim());

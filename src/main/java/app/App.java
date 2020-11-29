@@ -36,9 +36,6 @@ public class App {
             FileHandler fileHandler = new FileHandler();
             List<Node> nodes = fileHandler.read(confFilePath, currentNodeId);
 
-            int masterIdx = rand.nextInt(nodes.size());
-            nodes.get(masterIdx).setAsMaster();
-
             if (nodes.isEmpty()) {
                 System.exit(-1);
             }
