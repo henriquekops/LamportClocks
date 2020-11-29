@@ -23,7 +23,7 @@ public class ReceiveEvent extends Event {
     public ReceiveEvent(int currentId, int currentClock, int originId, int originClock) {
         this.m = new Date().getTime();
         this.i = currentId;
-        this.c = currentClock;
+        this.c = Integer.parseInt(currentClock+""+currentId);
         this.s = originId;
         this.t = originClock;
     }

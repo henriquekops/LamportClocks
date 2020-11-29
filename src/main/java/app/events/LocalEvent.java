@@ -19,7 +19,7 @@ public class LocalEvent extends Event {
     public LocalEvent(int currentId, int currentClock) {
         this.m = new Date().getTime();
         this.i = currentId;
-        this.c = currentClock;
+        this.c = Integer.parseInt(currentClock + "" + currentId);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package app;
+package app.nodes;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -10,7 +10,8 @@ public class Node {
 
     private final int id;
     private final InetAddress host;
-    private final int port;
+    private final int sendPort;
+    private final int listenPort;
     private final double chance;
     private final boolean isMaster;
     private final LamportClock clock;
@@ -18,7 +19,8 @@ public class Node {
     public Node(int id, String host, int port, double chance, boolean isMaster) throws UnknownHostException {
         this.id = id;
         this.host = InetAddress.getByName(host);
-        this.port = port;
+        this.sendPort = 8000 + id;
+        this.listenPort = port;
         this.chance = chance;
         this.isMaster = isMaster;
         this.clock = new LamportClock();
@@ -32,8 +34,12 @@ public class Node {
         return this.host;
     }
 
-    public int getPort() {
-        return this.port;
+    public int getSendPort () {
+        return this.sendPort;
+    }
+
+    public int getListenPort() {
+        return this.listenPort;
     }
 
     public double getChance() {
@@ -46,15 +52,5 @@ public class Node {
 
     public boolean isMaster() {
         return this.isMaster;
-    }
-
-    @Override
-    public String toString() {
-        return "app.Node{" +
-                "id=" + this.id +
-                ", host='" + this.host + '\'' +
-                ", port=" + this.port +
-                ", chance=" + this.chance +
-                '}';
     }
 }

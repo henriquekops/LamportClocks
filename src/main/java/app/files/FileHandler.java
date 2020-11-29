@@ -1,6 +1,7 @@
-package app;
+package app.files;
 
 import app.events.Event;
+import app.nodes.Node;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -15,10 +16,11 @@ public class FileHandler {
     private final File outputFile;
     private final int myId;
 
-    public FileHandler(String configFilePath, int myId) {
+    public FileHandler(String configFilePath, int myId) throws IOException {
         this.configFile = new File(configFilePath);
         this.outputFile = new File("./output_" + myId + ".txt");
         this.myId = myId;
+        if(!outputFile.createNewFile()) { clean(); }
     }
 
     public List<Node> read() {
@@ -57,12 +59,26 @@ public class FileHandler {
 
     public void write(Event event) {
         try {
-            FileOutputStream fos = new FileOutputStream(outputFile);
-            String line = event.toString();
-            fos.write(line.getBytes(), 0, line.length());
-            fos.close();
+            FileWriter writer = new FileWriter(outputFile.getAbsoluteFile(), true);
+            PrintWriter printer = new PrintWriter(writer, false);
+            printer.println(event.toString());
+            printer.close();
+            writer.close();
         } catch (IOException e) {
             System.out.println("ERROR when writing to output: " + e);
+            System.exit(-1);
+        }
+    }
+
+    public void clean() {
+        try {
+            FileWriter writer = new FileWriter(outputFile.getAbsoluteFile(), false);
+            PrintWriter printer = new PrintWriter(writer, false);
+            printer.flush();
+            printer.close();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("ERROR when cleaning output file: " + e);
             System.exit(-1);
         }
     }

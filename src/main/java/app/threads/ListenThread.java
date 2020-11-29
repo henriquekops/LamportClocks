@@ -1,10 +1,11 @@
 package app.threads;
 
-import app.FileHandler;
-import app.Node;
+import app.files.FileHandler;
+import app.nodes.Node;
 import app.events.ReceiveEvent;
 import app.sockets.CustomSocket;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ListenThread extends Thread {
@@ -14,9 +15,9 @@ public class ListenThread extends Thread {
     private final FileHandler fileHandler;
     private final AtomicBoolean running;
 
-    public ListenThread(CustomSocket socket, Node currentNode, FileHandler fileHandler) {
+    public ListenThread(Node currentNode, FileHandler fileHandler) throws IOException {
         this.currentNode = currentNode;
-        this.socket = socket;
+        this.socket = new CustomSocket(currentNode.getListenPort());
         this.fileHandler = fileHandler;
         this.running = new AtomicBoolean(true);
     }
@@ -31,27 +32,25 @@ public class ListenThread extends Thread {
             while (running.get()) {
                 String convertedMsg = socket.receive();
 
-                if (convertedMsg != null) {
-                    String[] splitMsg = convertedMsg.split(" ");
+                String[] splitMsg = convertedMsg.split(" ");
 
-                    int senderCLock = Integer.parseInt(splitMsg[0].trim());
-                    int senderId = Integer.parseInt(splitMsg[1].trim());
+                int senderCLock = Integer.parseInt(splitMsg[0].trim());
+                int senderId = Integer.parseInt(splitMsg[1].trim());
 
-                    currentNode.getClock().increaseCounter(senderCLock, true);
+                currentNode.getClock().increaseCounter(senderCLock, true);
 
-                    System.out.println("receive event | " +
-                            "updated clock = " + currentNode.getClock().getCounter() + " | " +
-                            "origin = " + senderId + " | " +
-                            "received clock = " + senderCLock
-                    );
+                System.out.println("receive event | " +
+                        "updated clock = " + currentNode.getClock().getCounter() + " | " +
+                        "origin = " + senderId + " | " +
+                        "received clock = " + senderCLock
+                );
 
-                    fileHandler.write(new ReceiveEvent(
-                            currentNode.getId(),
-                            currentNode.getClock().getCounter(),
-                            senderId,
-                            senderCLock
-                    ));
-                }
+                fileHandler.write(new ReceiveEvent(
+                        currentNode.getId(),
+                        currentNode.getClock().getCounter(),
+                        senderId,
+                        senderCLock
+                ));
             }
         } catch (Exception e) {
             System.out.println("ERROR at listen thread: " + e);

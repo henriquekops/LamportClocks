@@ -28,6 +28,12 @@ public class CustomMultiSocket {
         multiSocket.joinGroup(cluster);
     }
 
+    public void sendHeartBeat() throws IOException {
+        byte[] heartBeat = CONNECT_MSG.getBytes();
+        System.out.println("Sending heartbeat to master ...");
+        multiSocket.send(new DatagramPacket(heartBeat, heartBeat.length, cluster, CLUSTER_PORT));
+    }
+
     public void waitForConnections(int numNodes) throws IOException {
         int numConnections = 0;
 
@@ -45,11 +51,6 @@ public class CustomMultiSocket {
         multiSocket.send(new DatagramPacket(startMessage, startMessage.length, cluster, CLUSTER_PORT));
     }
 
-    public void sendHeartBeat() throws IOException {
-        byte[] heartBeat = CONNECT_MSG.getBytes();
-        multiSocket.send(new DatagramPacket(heartBeat, heartBeat.length, cluster, CLUSTER_PORT));
-    }
-
     public void waitForStart() throws IOException {
         String received;
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -65,5 +66,6 @@ public class CustomMultiSocket {
             }
         }
         System.out.println("master started!");
+        multiSocket.close();
     }
 }

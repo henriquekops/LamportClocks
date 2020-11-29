@@ -2,6 +2,8 @@ package app;
 
 import app.events.LocalEvent;
 import app.events.SendEvent;
+import app.files.FileHandler;
+import app.nodes.Node;
 import app.sockets.CustomMultiSocket;
 import app.sockets.CustomSocket;
 import app.threads.ListenThread;
@@ -15,6 +17,7 @@ public class App {
     static ListenThread thread;
 
     public static void main(String[] args) {
+
         if (args.length != 2) {
             System.out.println("Usage: LamportCLocks.jar <confFilePath: str> <myId: int>");
             System.exit(-1);
@@ -23,18 +26,20 @@ public class App {
         String confFilePath = args[0];
         int myId = Integer.parseInt(args[1]);
 
-        FileHandler fileHandler = new FileHandler(confFilePath, myId);
-        List<Node> nodes = fileHandler.read();
-        Node currentNode = nodes.remove(0);
-
         try {
-            CustomSocket socket = new CustomSocket(currentNode.getPort());
+
+            FileHandler fileHandler = new FileHandler(confFilePath, myId);
+            List<Node> nodes = fileHandler.read();
+
+            if (nodes.isEmpty()) {
+                System.exit(-1);
+            }
+
+            Node currentNode = nodes.remove(0);
+
+            CustomSocket socket = new CustomSocket(currentNode.getSendPort());
             CustomMultiSocket multiSocket = new CustomMultiSocket();
-            thread= new ListenThread(
-                socket,
-                currentNode,
-                fileHandler
-            );
+            thread = new ListenThread(currentNode, fileHandler);
 
             thread.start();
 
@@ -42,23 +47,30 @@ public class App {
 
             if (currentNode.isMaster()) {
                 multiSocket.waitForConnections(nodes.size());
-                multiSocket.waitForStart();
             } else {
                 multiSocket.sendHeartBeat();
-                multiSocket.waitForStart();
             }
+
+            multiSocket.waitForStart();
 
             Random rand = new Random();
             Node targetNode;
             String message;
 
-            for (int eventCounter = 0; eventCounter < 5; eventCounter++) {
+            for (int eventCounter = 0; eventCounter < 10; eventCounter++) {
+
+                Thread.sleep(rand.nextInt(500)+500);
 
                 if (Math.round(rand.nextFloat() * 10) / 10.0 <= currentNode.getChance()) {
+
                     currentNode.getClock().increaseCounter(1, false);
+
                     message = currentNode.getClock().getCounter() + " " + currentNode.getId();
+
                     targetNode = nodes.get(rand.nextInt(nodes.size()));
+
                     socket.send(message, targetNode);
+
                     fileHandler.write(new SendEvent(
                             currentNode.getId(),
                             currentNode.getClock().getCounter(),
@@ -84,6 +96,7 @@ public class App {
         }
         catch (Exception e) {
             System.out.println("ERROR at main: " + e);
+            e.printStackTrace();
             System.exit(-1);
         }
         finally {

@@ -21,7 +21,7 @@ public class SendEvent extends Event {
     public SendEvent(int currentId, int currentClock, int targetId) {
         this.m = new Date().getTime();
         this.i = currentId;
-        this.c = currentClock;
+        this.c = Integer.parseInt(currentClock + "" + currentId);
         this.d = targetId;
     }
 
