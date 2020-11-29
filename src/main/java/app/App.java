@@ -23,7 +23,6 @@ public class App {
      * @param args Command line arguments
      */
     public static void main(String[] args) {
-
         if (args.length != 2) {
             System.out.println("Missing parameters: <confFilePath: str> <myId: int>");
             System.exit(-1);
@@ -33,9 +32,12 @@ public class App {
         int currentNodeId = Integer.parseInt(args[1]);
 
         try {
-
+            Random rand = new Random();
             FileHandler fileHandler = new FileHandler();
             List<Node> nodes = fileHandler.read(confFilePath, currentNodeId);
+
+            int masterIdx = rand.nextInt(nodes.size());
+            nodes.get(masterIdx).setAsMaster();
 
             if (nodes.isEmpty()) {
                 System.exit(-1);
@@ -58,7 +60,6 @@ public class App {
                 multiSocket.waitForStart();
             }
 
-            Random rand = new Random();
             Node targetNode;
             String message;
 

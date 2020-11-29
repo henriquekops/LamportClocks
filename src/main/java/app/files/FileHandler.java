@@ -48,6 +48,7 @@ public class FileHandler {
                 }
             }
             br.close();
+            return nodes;
         } catch (IOException e) {
             System.out.println("Input file's format is wrong! Check out docs for help ...");
             System.exit(-1);
@@ -89,8 +90,7 @@ public class FileHandler {
             String host = rawConfig[1];
             int port = Integer.parseInt(rawConfig[2]);
             double chance = Double.parseDouble(rawConfig[3]);
-            boolean isMaster = Boolean.parseBoolean(rawConfig[4]);
-            return new Node(id, host, port, chance, isMaster);
+            return new Node(id, host, port, chance);
         } catch (UnknownHostException e) {
             System.out.println("ERROR while creating nodes: " + e);
             System.exit(-1);

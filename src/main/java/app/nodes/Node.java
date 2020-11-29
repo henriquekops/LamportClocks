@@ -13,17 +13,17 @@ public class Node {
     private final int sendPort;
     private final int listenPort;
     private final double chance;
-    private final boolean isMaster;
     private final LamportClock clock;
+    private boolean isMaster;
 
-    public Node(int id, String host, int port, double chance, boolean isMaster) throws UnknownHostException {
+    public Node(int id, String host, int port, double chance) throws UnknownHostException {
         this.id = id;
         this.host = InetAddress.getByName(host);
         this.sendPort = 8000 + id;
         this.listenPort = port;
         this.chance = chance;
-        this.isMaster = isMaster;
         this.clock = new LamportClock();
+        this.isMaster = false;
     }
 
     /**
@@ -87,5 +87,12 @@ public class Node {
      */
     public boolean isMaster() {
         return this.isMaster;
+    }
+
+    /**
+     * Sets this node as master node
+     */
+    public void setAsMaster() {
+        this.isMaster = true;
     }
 }
