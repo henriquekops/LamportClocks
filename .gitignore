@@ -33,3 +33,6 @@ dependency-reduced-pom.xml
 
 # iml
 LamportCLocks.iml
+
+# outputs
+output*

@@ -1,6 +1,6 @@
 # LamportClocks
 
-> Author: Gabriel Castro, Gustavo Possebon e Henrique Kops
+> Authors: Gabriel Castro, Gustavo Possebon e Henrique Kops
 
 _Java implementation over Lamport's clocks._
 

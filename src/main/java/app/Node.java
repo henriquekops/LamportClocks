@@ -1,4 +1,4 @@
-package main;
+package app;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -40,13 +40,17 @@ public class Node {
         return this.chance;
     }
 
-    public LamportClock getClock() { return this.clock; }
+    public LamportClock getClock() {
+        return this.clock;
+    }
 
-    public boolean isMaster() { return this.isMaster; }
+    public boolean isMaster() {
+        return this.isMaster;
+    }
 
     @Override
     public String toString() {
-        return "Node{" +
+        return "app.Node{" +
                 "id=" + this.id +
                 ", host='" + this.host + '\'' +
                 ", port=" + this.port +
