@@ -2,14 +2,17 @@ package app.events;
 
 import java.util.Date;
 
+/**
+ * Local event representation
+ *
+ * Format : m i c l
+ *
+ * m = time of computer in millis
+ * i = current node's ID
+ * c = current clock's value
+ * l = identifies 'local' action
+ */
 public class LocalEvent extends Event {
-    /*
-        LOCAL : m i c l,
-        m = time of computer in millis
-        i = current node's ID
-        c = current clock's value
-        l = identifies 'local' action
-    */
 
     String formatString = "m=%d | i=%d | c=%d | l";
     private final long m;

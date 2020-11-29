@@ -2,15 +2,16 @@ package app.events;
 
 import java.util.Date;
 
+/**
+ * Send event representation
+ * Format: m i c s d
+ * m = time of computer in millis
+ * i = current node's ID
+ * c = current clock's value (sent)
+ * s = identifies 'send' action
+ * d = target node's ID
+ */
 public class SendEvent extends Event {
-    /*
-        SEND (DISTRIBUTED): m i c s d
-        m = time of computer in millis
-        i = current node's ID
-        c = current clock's value (sent)
-        s = identifies 'send' action
-        d = target node's ID
-    */
 
     String formatString = "m=%d | i=%d | c=%d | s | d=%d";
     private final long m;

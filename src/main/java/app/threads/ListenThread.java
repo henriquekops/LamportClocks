@@ -1,13 +1,16 @@
 package app.threads;
 
+import app.events.ReceiveEvent;
 import app.files.FileHandler;
 import app.nodes.Node;
-import app.events.ReceiveEvent;
 import app.sockets.CustomSocket;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Listen thread representation
+ */
 public class ListenThread extends Thread {
 
     private final Node currentNode;
@@ -15,17 +18,23 @@ public class ListenThread extends Thread {
     private final FileHandler fileHandler;
     private final AtomicBoolean running;
 
-    public ListenThread(Node currentNode, FileHandler fileHandler) throws IOException {
+    public ListenThread(Node currentNode) throws IOException {
         this.currentNode = currentNode;
         this.socket = new CustomSocket(currentNode.getListenPort());
-        this.fileHandler = fileHandler;
+        this.fileHandler = new FileHandler();
         this.running = new AtomicBoolean(true);
     }
 
+    /**
+     * Kills this thread
+     */
     public void kill() {
         this.running.set(false);
     }
 
+    /**
+     * Overwritten Thread method to receive messages from other nodes
+     */
     @Override
     public void run() {
         try {
@@ -39,18 +48,17 @@ public class ListenThread extends Thread {
 
                 currentNode.getClock().increaseCounter(senderCLock, true);
 
-                System.out.println("receive event | " +
-                        "updated clock = " + currentNode.getClock().getCounter() + " | " +
-                        "origin = " + senderId + " | " +
-                        "received clock = " + senderCLock
-                );
-
                 fileHandler.write(new ReceiveEvent(
                         currentNode.getId(),
                         currentNode.getClock().getCounter(),
                         senderId,
                         senderCLock
                 ));
+                System.out.println("receive event | " +
+                        "updated clock = " + currentNode.getClock().getCounter() + " | " +
+                        "origin = " + senderId + " | " +
+                        "received clock = " + senderCLock
+                );
             }
         } catch (Exception e) {
             System.out.println("ERROR at listen thread: " + e);

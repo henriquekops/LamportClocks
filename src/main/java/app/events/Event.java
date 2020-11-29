@@ -1,3 +1,8 @@
 package app.events;
 
-public abstract class Event {}
+/**
+ * Event abstraction
+ */
+public abstract class Event {
+    /*type wrapper*/
+}

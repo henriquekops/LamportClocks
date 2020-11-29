@@ -5,6 +5,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+/**
+ * Custom multicast socket representation
+ */
 public class CustomMultiSocket {
 
     private final String START_MSG, CONNECT_MSG;
@@ -23,17 +26,33 @@ public class CustomMultiSocket {
         this.start = false;
     }
 
-    public void connect() throws IOException{
+    /**
+     * Connects this socket to multicast group
+     *
+     * @throws IOException In case this socket cannot connect to the cluster
+     */
+    public void connect() throws IOException {
         System.out.println("connecting to cluster...");
         multiSocket.joinGroup(cluster);
     }
 
+    /**
+     * Sends a heartbeat to the cluster through this socket
+     *
+     * @throws IOException In case this socket cannot send a heartbeat message to the cluster
+     */
     public void sendHeartBeat() throws IOException {
         byte[] heartBeat = CONNECT_MSG.getBytes();
         System.out.println("Sending heartbeat to master ...");
         multiSocket.send(new DatagramPacket(heartBeat, heartBeat.length, cluster, CLUSTER_PORT));
     }
 
+    /**
+     * Waits for all connections if this socket was created at master node
+     *
+     * @param numNodes Number of nodes to wait for
+     * @throws IOException In case if an error occurs when receiving heartbeat messages
+     */
     public void waitForConnections(int numNodes) throws IOException {
         int numConnections = 0;
 
@@ -51,6 +70,11 @@ public class CustomMultiSocket {
         multiSocket.send(new DatagramPacket(startMessage, startMessage.length, cluster, CLUSTER_PORT));
     }
 
+    /**
+     * Waits for the master node to start all connection if this socket was created at a default cluster node
+     *
+     * @throws IOException In case if an error occurs when receiving master's start message
+     */
     public void waitForStart() throws IOException {
         String received;
         byte[] buffer = new byte[BUFFER_SIZE];

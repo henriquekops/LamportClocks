@@ -11,15 +11,21 @@ import app.threads.ListenThread;
 import java.util.List;
 import java.util.Random;
 
-
+/**
+ * Application entrypoint
+ */
 public class App {
 
     static ListenThread thread;
 
+    /**
+     * Node logic implementation
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
 
         if (args.length != 2) {
-            System.out.println("Usage: LamportCLocks.jar <confFilePath: str> <myId: int>");
+            System.out.println("Missing parameters: <confFilePath: str> <myId: int>");
             System.exit(-1);
         }
 
@@ -28,8 +34,8 @@ public class App {
 
         try {
 
-            FileHandler fileHandler = new FileHandler(confFilePath, myId);
-            List<Node> nodes = fileHandler.read();
+            FileHandler fileHandler = new FileHandler();
+            List<Node> nodes = fileHandler.read(confFilePath, myId);
 
             if (nodes.isEmpty()) {
                 System.exit(-1);
@@ -39,8 +45,8 @@ public class App {
 
             CustomSocket socket = new CustomSocket(currentNode.getSendPort());
             CustomMultiSocket multiSocket = new CustomMultiSocket();
-            thread = new ListenThread(currentNode, fileHandler);
 
+            thread = new ListenThread(currentNode);
             thread.start();
 
             multiSocket.connect();
@@ -49,9 +55,8 @@ public class App {
                 multiSocket.waitForConnections(nodes.size());
             } else {
                 multiSocket.sendHeartBeat();
+                multiSocket.waitForStart();
             }
-
-            multiSocket.waitForStart();
 
             Random rand = new Random();
             Node targetNode;
@@ -62,7 +67,6 @@ public class App {
                 Thread.sleep(rand.nextInt(500)+500);
 
                 if (Math.round(rand.nextFloat() * 10) / 10.0 <= currentNode.getChance()) {
-
                     currentNode.getClock().increaseCounter(1, false);
 
                     message = currentNode.getClock().getCounter() + " " + currentNode.getId();
@@ -83,6 +87,7 @@ public class App {
                     );
                 } else {
                     currentNode.getClock().increaseCounter(1, false);
+
                     fileHandler.write(new LocalEvent(
                         currentNode.getId(),
                         currentNode.getClock().getCounter()
