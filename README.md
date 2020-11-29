@@ -16,9 +16,9 @@ At project's root:
 1. Execute with java:
 
     ```
-    $ java -jar target/LamportCLocks-1.0-SNAPSHOT.jar <confFilePath: str> <outFilePath: str> <myId: int>
+    $ ./run.sh <confFilePath: str> <currentNodeId: int>
     ```
 
-### Architecture
+### Architecture overview
 
 ##### @TODO

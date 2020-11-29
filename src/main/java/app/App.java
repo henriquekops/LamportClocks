@@ -30,12 +30,12 @@ public class App {
         }
 
         String confFilePath = args[0];
-        int myId = Integer.parseInt(args[1]);
+        int currentNodeId = Integer.parseInt(args[1]);
 
         try {
 
             FileHandler fileHandler = new FileHandler();
-            List<Node> nodes = fileHandler.read(confFilePath, myId);
+            List<Node> nodes = fileHandler.read(confFilePath, currentNodeId);
 
             if (nodes.isEmpty()) {
                 System.exit(-1);
