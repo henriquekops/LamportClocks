@@ -60,7 +60,7 @@ public class App {
             Node targetNode;
             String message;
 
-            for (int eventCounter = 0; eventCounter < 10; eventCounter++) {
+            for (int eventCounter = 0; eventCounter < 100; eventCounter++) {
 
                 Thread.sleep(rand.nextInt(500)+500);
 
